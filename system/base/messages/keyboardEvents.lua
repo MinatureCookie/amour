@@ -1,8 +1,8 @@
-require("amour/system/classes/MessageBus")
+local MessageBus = require("amour/system/classes/MessageBus")
 
-messageBus = MessageBus.create()
+local messageBus = MessageBus.create()
 
-keyMap = {
+local keyMap = {
 	["up"] = "up",
 	["w"] = "up",
 	["z"] = "up",

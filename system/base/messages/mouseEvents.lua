@@ -1,14 +1,14 @@
-require("amour/system/classes/MessageBus")
-require("amour/system/classes/sceneElements/Clickable")
+local MessageBus = require("amour/system/classes/MessageBus")
+local Clickable = require("amour/system/classes/sceneElements/Clickable")
 
-messageBus = MessageBus.create()
-mousePressedIsDown = false
-mouseX = 0
-mouseY = 0
+local messageBus = MessageBus.create()
+local mousePressedIsDown = false
+local mouseX = 0
+local mouseY = 0
 
-function _attemptHover(stageItem)
+local function _attemptHover(stageItem)
 	if(stageItem.isHitBy(mouseX, mouseY)) then
-		messageBus.sendEventMessage("mouseover", stageItem)
+		messageBus.sendEventMessage("mouseover", stageItem, {x = mouseX, y = mouseY})
 		if(not(stageItem.bubbleFocus)) then
 			return false
 		end
@@ -24,7 +24,6 @@ function pollMousePosition()
 	if(stage) then
 		stage.forEach(function(value)
 			if(value.isA(Clickable)) then
-				print("Yeah")
 				return _attemptHover(value)
 			end
 		end)

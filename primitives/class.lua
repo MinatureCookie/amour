@@ -1,85 +1,128 @@
-require("amour/primitives/methods/bind")
+function class(name, required, uninstantiatedInitClass)
+	local requiredArgs = {n = 0}
+	for index, value in pairs(required) do
+		requiredArgs.n = requiredArgs.n + 1
+		requiredArgs[requiredArgs.n] = require(value)
+	end
 
-function class(base)
 	local newClass = {}
-	if(type(base) == "table") then
-		newClass._base = base
+	local initClass = uninstantiatedInitClass(unpack(requiredArgs))
+
+	newClass.className = name
+	newClass.statics = {}
+	newClass.members = {}
+	newClass.isSingleton = false
+	if(initClass.statics ~= nil) then
+		newClass.statics = initClass.statics
 	end
-	newClass.__index = newClass
-
-	return bind(_createClass, newClass)
-end
-
-function _createClass(newClass, initClass)
-	newClass._initClass = initClass
-
-	function newClass.isA(classType)
-		if(classType == newClass) then
-			return true
-		elseif(newClass._base ~= nil) then
-
-			return newClass._base.isA(classType)
-		end
-
-		return false
+	if(initClass.members ~= nil) then
+		newClass.members = initClass.members
 	end
-
-	function newClass.create(...)
-		local newInstance = {}
-		setmetatable(newInstance, newClass)
-
-		if(initClass ~= nil) then
-			local fieldsAndMethods = initClass(newInstance)
-			if(fieldsAndMethods.singleton == true) then
-				function newClass.create()
-					return newInstance
-				end
-			end
-
-			_setFieldsAndMethods(newInstance, fieldsAndMethods, newClass)
-
-			local currentParent = newClass._base
-			while(currentParent ~= nil) do
-				if(currentParent._initClass ~= nil) then
-					fieldsAndMethods = currentParent._initClass(newInstance)
-					_setFieldsAndMethods(newInstance, fieldsAndMethods, newClass)
-				end
-
-				currentParent = currentParent._base
-			end
-		end
-
-		if(newInstance.init ~= nil) then
-			newInstance.init(...)
-		elseif(type(base) == "table" and base.init ~= nil) then
-			base.init(...)
-		end
-
-		return newInstance
+	if(initClass.singleton == true) then
+		newClass.isSingleton = true
 	end
+	if(initClass.inherits ~= nil) then
+		newClass.base = initClass.inherits
+	end
+	newClass.create = _newClassCreate(newClass)
+	newClass.isA = _newClassIsA(newClass)
+	newClass.destroy = _newClassDestroy(required)
 
 	return newClass
 end
 
-function _superMustBeCalled(instance, index, value)
-	return (type(instance[index]) == "function" and type(value) == "function"
-			and
-			(index == "init"
-			or index == "destroy"))
+function _initInstanceFieldsAndMethods(newInstance, uninstantiatedMembers)
+	local instantiatedMembers = uninstantiatedMembers(newInstance)
+	for index, value in pairs(instantiatedMembers) do
+		if(rawget(newInstance, index) == nil) then
+			newInstance[index] = value
+		end
+	end
 end
 
-function _setFieldsAndMethods(instance, fieldsAndMethods)
-	for index, value in pairs(fieldsAndMethods) do
+function _filterForMethods(table)
+	for index, value in pairs(table) do
+		if(type(value) ~= "function") then
+			table[index] = nil
+		end
+	end
+end
 
-		if(instance[index] == nil) then
-			instance[index] = value
-		elseif(_superMustBeCalled(instance, index, value)) then
-			local baseMethod = instance[index]
-			instance[index] = function(...)
-				baseMethod(...)
-				value(...)
+function _generateSuper(newInstance, newClass)
+	if(newClass.base ~= nil) then
+		newInstance.super = newClass.base.members(newInstance)
+		_filterForMethods(newInstance.super)
+	end
+
+	return newInstance.super
+end
+
+function _handleInstanceAccess(newInstance, newClass, table, key)
+	local toReturn
+
+	if(key == "super") then
+		toReturn = _generateSuper(newInstance, newClass)
+	elseif(newClass.base ~= nil) then
+		_initInstanceFieldsAndMethods(newInstance, newClass.base.members)
+		if(rawget(newInstance, key) == nil) then
+			toReturn = _handleInstanceAccess(newInstance, newClass.base, table, key)
+		else
+			toReturn = newInstance[key]
+		end
+	end
+
+	return toReturn
+end
+
+function _newClassDestroy(required)
+	local destroyFunction = function()
+		for index, value in pairs(required) do
+			unload(value)
+		end
+	end
+end
+
+function _newClassCreate(newClass)
+	local createFunction = function(...)
+		local newInstance = {}
+
+		if(newClass.isSingleton == true) then
+			newClass.create = function()
+				return newInstance
 			end
 		end
 
+		local newInstanceMt = {}
+		setmetatable(newInstance, newInstanceMt)
+		newInstanceMt.__index = bind(_handleInstanceAccess, newInstance, newClass)
+		_initInstanceFieldsAndMethods(newInstance, newClass.members)
+
+		if(newInstance.init ~= nil) then
+			newInstance.init(...)
+		end
+
+		newInstance.statics = newClass.statics
+		newInstance.isA = newClass.isA
+
+		return newInstance
 	end
+
+	return createFunction
+end
+
+function _newClassIsA(newClass)
+	local isAFunction = function(classInQuestion)
+		local result = false
+		local ourClass = newClass
+		while(result == false and ourClass ~= nil) do
+			if(ourClass.className == classInQuestion.className) then
+				result = true
+			end
+			ourClass = ourClass.base
+		end
+
+		return result
+	end
+
+	return isAFunction
 end

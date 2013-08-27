@@ -1,28 +1,34 @@
-Positionable = class()(function(self)return{
+return class("Positionable",
+{},
+function() return {
 
-	x = 0,
-	y = 0,
+	members = function(self) return {
 
-	setX = function(x)
-		self.x = x
-	end,
-	setY = function(y)
-		self.y = y
-	end,
+		x = 0,
+		y = 0,
 
-	getWidth = function()
-		error("Abstract Positionable class method getWidth call")
-	end,
-	getHeight = function()
-		error("Abstract Positionable class method getHeight call")
-	end,
+		setX = function(x)
+			self.x = x
+		end,
+		setY = function(y)
+			self.y = y
+		end,
 
-	centerX = function()
-		self.setX((love.graphics.getWidth() / 2) - (self.getWidth() / 2))
-	end,
+		getWidth = function()
+			error("Abstract Positionable class method getWidth call")
+		end,
+		getHeight = function()
+			error("Abstract Positionable class method getHeight call")
+		end,
 
-	centerY = function()
-		self.setY((love.graphics.getHeight() / 2) - (self.getHeight() / 2))
-	end,
+		centerX = function()
+			self.setX((love.graphics.getWidth() / 2) - (self.getWidth() / 2))
+		end,
+
+		centerY = function()
+			self.setY((love.graphics.getHeight() / 2) - (self.getHeight() / 2))
+		end,
+
+	} end
 
 }end)
