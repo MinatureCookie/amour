@@ -49,12 +49,15 @@ function _filterForMethods(table)
 end
 
 function _generateSuper(newInstance, newClass)
+	local toReturn
+
 	if(newClass.base ~= nil) then
-		newInstance.super = newClass.base.members(newInstance)
-		_filterForMethods(newInstance.super)
+		toReturn = newClass.base.members(newInstance)
+		_filterForMethods(toReturn)
+		newInstance.super = toReturn
 	end
 
-	return newInstance.super
+	return toReturn
 end
 
 function _handleInstanceAccess(newInstance, newClass, table, key)
@@ -62,13 +65,19 @@ function _handleInstanceAccess(newInstance, newClass, table, key)
 
 	if(key == "super") then
 		toReturn = _generateSuper(newInstance, newClass)
-	elseif(newClass.base ~= nil) then
-		_initInstanceFieldsAndMethods(newInstance, newClass.base.members)
-		if(rawget(newInstance, key) == nil) then
-			toReturn = _handleInstanceAccess(newInstance, newClass.base, table, key)
-		else
-			toReturn = newInstance[key]
+	else
+
+		local currentClass = newClass
+		while(currentClass.base ~= nil) do
+			currentClass = currentClass.base
+			_initInstanceFieldsAndMethods(newInstance, currentClass.members)
+
+			if(rawget(newInstance, key) ~= nil) then
+				toReturn = newInstance[key]
+				break
+			end
 		end
+
 	end
 
 	return toReturn

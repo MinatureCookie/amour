@@ -28,6 +28,10 @@ function scene(required, initScene)
 	end
 
 	sceneElements.loadScene()
+
+	print()
+	print("-----Scene " .. currentScene .. " loaded-----")
+	print()
 end
 
 function changeScene(newScene)
