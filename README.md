@@ -38,7 +38,7 @@ A bare-bones scene file might look like this
 
 ## Getting started
 ### Wiki
-The wiki [here](amour/wiki) on GitHub should have enough detail to get you ready to use Amour from scratch.
+The wiki [here](../../amour/wiki) on GitHub should have enough detail to get you ready to use Amour from scratch.
 
 If you feel the wiki is lacking somewhere, or if something doesn't make sense - please do contribute!
 
