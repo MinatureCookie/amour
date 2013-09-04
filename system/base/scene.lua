@@ -1,14 +1,16 @@
+local ClickableContainer = require("amour/system/classes/sceneElements/ClickableContainer")
+
 sceneElements = {}
 sceneGlobals = {}
 oldRequire = {}
 currentScene = nil
-stage = Array.create()
+stage = ClickableContainer.create()
 
 function scene(required, initScene)
 	clearScene()
 
 	function sceneElements.addToStage(stageItem)
-		stage.push(stageItem)
+		stage.addNew(stageItem)
 	end
 	function sceneElements.loadScene()
 	end
@@ -61,15 +63,11 @@ function clearScene()
 end
 
 function love.draw()
-	stage.forEach(function(stageItem)
-		stageItem.draw()
-	end)
+	stage.draw()
 end
 
 function love.update(dt)
-	if(pollMousePosition) then
-		pollMousePosition()
-	end
+	stage.pollMousePosition()
 
 	sceneElements.updateScene(dt)
 end
