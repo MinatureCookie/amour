@@ -24,6 +24,10 @@ function(Positionable) return {
 			self._positionables.push(newPositionable)
 		end,
 
+		empty = function()
+			self._positionables.empty()
+		end,
+
 		draw = function()
 			self._positionables.forEach(function(value)
 				value.draw()
