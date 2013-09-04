@@ -31,8 +31,8 @@ function class(name, required, uninstantiatedInitClass)
 	return newClass
 end
 
-function _initInstanceFieldsAndMethods(newInstance, uninstantiatedMembers)
-	local instantiatedMembers = uninstantiatedMembers(newInstance)
+function _initInstanceFieldsAndMethods(self, newInstance, uninstantiatedMembers)
+	local instantiatedMembers = uninstantiatedMembers(self)
 	for index, value in pairs(instantiatedMembers) do
 		if(rawget(newInstance, index) == nil) then
 			newInstance[index] = value
@@ -48,34 +48,54 @@ function _filterForMethods(table)
 	end
 end
 
-function _generateSuper(newInstance, newClass)
+function _generateSuper(self, newInstance, newClass)
 	local toReturn
 
 	if(newClass.base ~= nil) then
 		toReturn = newClass.base.members(newInstance)
 		_filterForMethods(toReturn)
 		newInstance.super = toReturn
+
+		local superMt = {}
+		setmetatable(newInstance.super, superMt)
+		superMt.__index = bind(_handleInstanceAccess, self, newInstance.super, newClass.base)
 	end
 
 	return toReturn
 end
 
-function _handleInstanceAccess(newInstance, newClass, table, key)
+function _handleInstanceAccess(self, newInstance, newClass, table, key)
 	local toReturn
 
 	if(key == "super") then
-		toReturn = _generateSuper(newInstance, newClass)
+		toReturn = _generateSuper(self, newInstance, newClass)
 	else
 
-		local currentClass = newClass
-		while(currentClass.base ~= nil) do
-			currentClass = currentClass.base
-			_initInstanceFieldsAndMethods(newInstance, currentClass.members)
+		if(rawget(newInstance, "_doNotLookFor") == nil) then
+			newInstance._doNotLookFor = {}
+		end
 
-			if(rawget(newInstance, key) ~= nil) then
-				toReturn = newInstance[key]
-				break
+		if(not(newInstance._doNotLookFor.key)) then
+
+			local currentClass = newClass
+			while(currentClass ~= nil) do
+				if(not(currentClass.isA(rawget(newInstance, "_lastClassCopy")))) then
+					_initInstanceFieldsAndMethods(self, newInstance, currentClass.members)
+					newInstance._lastClassCopy = currentClass
+				end
+
+				if(rawget(newInstance, key) ~= nil) then
+					toReturn = newInstance[key]
+					break
+				end
+
+				currentClass = currentClass.base
 			end
+
+			if(toReturn == nil) then
+				newInstance._doNotLookFor.key = true
+			end
+
 		end
 
 	end
@@ -103,8 +123,7 @@ function _newClassCreate(newClass)
 
 		local newInstanceMt = {}
 		setmetatable(newInstance, newInstanceMt)
-		newInstanceMt.__index = bind(_handleInstanceAccess, newInstance, newClass)
-		_initInstanceFieldsAndMethods(newInstance, newClass.members)
+		newInstanceMt.__index = bind(_handleInstanceAccess, newInstance, newInstance, newClass)
 
 		if(newInstance.init ~= nil) then
 			newInstance.init(...)
@@ -112,6 +131,7 @@ function _newClassCreate(newClass)
 
 		newInstance.statics = newClass.statics
 		newInstance.isA = newClass.isA
+		newInstance.classValue = newClass
 
 		return newInstance
 	end
@@ -123,11 +143,14 @@ function _newClassIsA(newClass)
 	local isAFunction = function(classInQuestion)
 		local result = false
 		local ourClass = newClass
-		while(result == false and ourClass ~= nil) do
-			if(ourClass.className == classInQuestion.className) then
-				result = true
+
+		if(classInQuestion ~= nil) then
+			while(result == false and ourClass ~= nil) do
+				if(ourClass.className == classInQuestion.className) then
+					result = true
+				end
+				ourClass = ourClass.base
 			end
-			ourClass = ourClass.base
 		end
 
 		return result
