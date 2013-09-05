@@ -12,9 +12,6 @@ function class(name, required, uninstantiatedInitClass)
 	newClass.statics = {}
 	newClass.members = {}
 	newClass.isSingleton = false
-	if(initClass.statics ~= nil) then
-		newClass.statics = initClass.statics
-	end
 	if(initClass.members ~= nil) then
 		newClass.members = initClass.members
 	end
@@ -28,7 +25,23 @@ function class(name, required, uninstantiatedInitClass)
 	newClass.isA = _newClassIsA(newClass)
 	newClass.destroy = _newClassDestroy(required)
 
+	_setAllStatics(newClass, initClass.statics)
+
 	return newClass
+end
+
+function _setAllStatics(newClass, statics)
+	if(statics ~= nil) then
+		newClass.statics = statics
+	end
+
+	if(newClass.base ~= nil) then
+		for index, value in pairs(newClass.base.statics) do
+			if(newClass.statics[index] == nil) then
+				newClass.statics[index] = value
+			end
+		end
+	end
 end
 
 function _initInstanceFieldsAndMethods(self, newInstance, uninstantiatedMembers)
@@ -115,6 +128,10 @@ function _newClassCreate(newClass)
 	local createFunction = function(...)
 		local newInstance = {}
 
+		newInstance.statics = newClass.statics
+		newInstance.isA = newClass.isA
+		newInstance.classValue = newClass
+
 		if(newClass.isSingleton == true) then
 			newClass.create = function()
 				return newInstance
@@ -128,10 +145,6 @@ function _newClassCreate(newClass)
 		if(newInstance.init ~= nil) then
 			newInstance.init(...)
 		end
-
-		newInstance.statics = newClass.statics
-		newInstance.isA = newClass.isA
-		newInstance.classValue = newClass
 
 		return newInstance
 	end
