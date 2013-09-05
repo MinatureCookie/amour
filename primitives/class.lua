@@ -9,39 +9,33 @@ function class(name, required, uninstantiatedInitClass)
 	local initClass = uninstantiatedInitClass(unpack(requiredArgs))
 
 	newClass.className = name
-	newClass.statics = {}
-	newClass.members = {}
-	newClass.isSingleton = false
-	if(initClass.members ~= nil) then
-		newClass.members = initClass.members
-	end
-	if(initClass.singleton == true) then
-		newClass.isSingleton = true
-	end
-	if(initClass.inherits ~= nil) then
-		newClass.base = initClass.inherits
-	end
+	newClass.members = initClass.members or {}
+	newClass.isSingleton = (initClass.singleton == true)
+	newClass.base = initClass.inherits
 	newClass.create = _newClassCreate(newClass)
 	newClass.isA = _newClassIsA(newClass)
 	newClass.destroy = _newClassDestroy(required)
-
-	_setAllStatics(newClass, initClass.statics)
+	newClass.statics = _newClassStatics(newClass, initClass.statics)
 
 	return newClass
 end
 
-function _setAllStatics(newClass, statics)
+function _newClassStatics(newClass, statics)
+	local newClassStatics = {}
+
 	if(statics ~= nil) then
-		newClass.statics = statics
+		newClassStatics = statics
 	end
 
 	if(newClass.base ~= nil) then
 		for index, value in pairs(newClass.base.statics) do
-			if(newClass.statics[index] == nil) then
-				newClass.statics[index] = value
+			if(newClassStatics[index] == nil) then
+				newClassStatics[index] = value
 			end
 		end
 	end
+
+	return newClassStatics
 end
 
 function _initInstanceFieldsAndMethods(self, newInstance, uninstantiatedMembers)
@@ -83,34 +77,27 @@ function _handleInstanceAccess(self, newInstance, newClass, table, key)
 	if(key == "super") then
 		toReturn = _generateSuper(self, newInstance, newClass)
 	else
+		toReturn = _attemptToResolveKey(self, newClass, newInstance, key)
+	end
 
-		if(rawget(newInstance, "_doNotLookFor") == nil) then
-			newInstance._doNotLookFor = {}
+	return toReturn
+end
+
+function _attemptToResolveKey(self, currentClass, newInstance, key)
+	local toReturn
+
+	while(currentClass ~= nil) do
+		if(not(currentClass.isA(rawget(newInstance, "_amourField_lastClassCopy")))) then
+			_initInstanceFieldsAndMethods(self, newInstance, currentClass.members)
+			newInstance._amourField_lastClassCopy = currentClass
 		end
 
-		if(not(newInstance._doNotLookFor.key)) then
-
-			local currentClass = newClass
-			while(currentClass ~= nil) do
-				if(not(currentClass.isA(rawget(newInstance, "_lastClassCopy")))) then
-					_initInstanceFieldsAndMethods(self, newInstance, currentClass.members)
-					newInstance._lastClassCopy = currentClass
-				end
-
-				if(rawget(newInstance, key) ~= nil) then
-					toReturn = newInstance[key]
-					break
-				end
-
-				currentClass = currentClass.base
-			end
-
-			if(toReturn == nil) then
-				newInstance._doNotLookFor.key = true
-			end
-
+		if(rawget(newInstance, key) ~= nil) then
+			toReturn = newInstance[key]
+			break
 		end
 
+		currentClass = currentClass.base
 	end
 
 	return toReturn
