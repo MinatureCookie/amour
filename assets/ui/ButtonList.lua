@@ -1,12 +1,12 @@
 return class("ButtonList",
 {
 	"amour/system/classes/Observer",
-	"amour/system/classes/sceneElements/PositionableContainer",
-	"src/menu/classes/Button"
+	"amour/system/classes/sceneElements/ClickableContainer",
+	"amour/assets/ui/Button"
 },
-function(Observer, PositionableContainer, Button) return {
+function(Observer, ClickableContainer, Button) return {
 
-	inherits = PositionableContainer,
+	inherits = ClickableContainer,
 
 	members = function(self) return {
 
