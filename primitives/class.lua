@@ -1,3 +1,7 @@
+local _newClassStatics, _initInstanceFieldsAndMethods, _filterForMethods, _generateSuper,
+		_handleInstanceAccess, _attemptToResolveKey, _newClassDestroy, _newClassCreate,
+		_newClassIsA
+
 function class(name, required, uninstantiatedInitClass)
 	local requiredArgs = {n = 0}
 	for index, value in pairs(required) do
@@ -9,26 +13,33 @@ function class(name, required, uninstantiatedInitClass)
 	local initClass = uninstantiatedInitClass(unpack(requiredArgs))
 
 	newClass.className = name
-	newClass.statics = {}
-	newClass.members = {}
-	newClass.isSingleton = false
-	if(initClass.statics ~= nil) then
-		newClass.statics = initClass.statics
-	end
-	if(initClass.members ~= nil) then
-		newClass.members = initClass.members
-	end
-	if(initClass.singleton == true) then
-		newClass.isSingleton = true
-	end
-	if(initClass.inherits ~= nil) then
-		newClass.base = initClass.inherits
-	end
+	newClass.members = initClass.members or {}
+	newClass.isSingleton = (initClass.singleton == true)
+	newClass.base = initClass.inherits
 	newClass.create = _newClassCreate(newClass)
 	newClass.isA = _newClassIsA(newClass)
 	newClass.destroy = _newClassDestroy(required)
+	newClass.statics = _newClassStatics(newClass, initClass.statics)
 
 	return newClass
+end
+
+function _newClassStatics(newClass, statics)
+	local newClassStatics = {}
+
+	if(statics ~= nil) then
+		newClassStatics = statics
+	end
+
+	if(newClass.base ~= nil) then
+		for index, value in pairs(newClass.base.statics) do
+			if(newClassStatics[index] == nil) then
+				newClassStatics[index] = value
+			end
+		end
+	end
+
+	return newClassStatics
 end
 
 function _initInstanceFieldsAndMethods(self, newInstance, uninstantiatedMembers)
@@ -70,34 +81,27 @@ function _handleInstanceAccess(self, newInstance, newClass, table, key)
 	if(key == "super") then
 		toReturn = _generateSuper(self, newInstance, newClass)
 	else
+		toReturn = _attemptToResolveKey(self, newClass, newInstance, key)
+	end
 
-		if(rawget(newInstance, "_doNotLookFor") == nil) then
-			newInstance._doNotLookFor = {}
+	return toReturn
+end
+
+function _attemptToResolveKey(self, currentClass, newInstance, key)
+	local toReturn
+
+	while(currentClass ~= nil) do
+		if(not(currentClass.isA(rawget(newInstance, "_amourField_lastClassCopy")))) then
+			_initInstanceFieldsAndMethods(self, newInstance, currentClass.members)
+			newInstance._amourField_lastClassCopy = currentClass
 		end
 
-		if(not(newInstance._doNotLookFor.key)) then
-
-			local currentClass = newClass
-			while(currentClass ~= nil) do
-				if(not(currentClass.isA(rawget(newInstance, "_lastClassCopy")))) then
-					_initInstanceFieldsAndMethods(self, newInstance, currentClass.members)
-					newInstance._lastClassCopy = currentClass
-				end
-
-				if(rawget(newInstance, key) ~= nil) then
-					toReturn = newInstance[key]
-					break
-				end
-
-				currentClass = currentClass.base
-			end
-
-			if(toReturn == nil) then
-				newInstance._doNotLookFor.key = true
-			end
-
+		if(rawget(newInstance, key) ~= nil) then
+			toReturn = newInstance[key]
+			break
 		end
 
+		currentClass = currentClass.base
 	end
 
 	return toReturn
@@ -115,6 +119,10 @@ function _newClassCreate(newClass)
 	local createFunction = function(...)
 		local newInstance = {}
 
+		newInstance.statics = newClass.statics
+		newInstance.isA = newClass.isA
+		newInstance.classValue = newClass
+
 		if(newClass.isSingleton == true) then
 			newClass.create = function()
 				return newInstance
@@ -128,10 +136,6 @@ function _newClassCreate(newClass)
 		if(newInstance.init ~= nil) then
 			newInstance.init(...)
 		end
-
-		newInstance.statics = newClass.statics
-		newInstance.isA = newClass.isA
-		newInstance.classValue = newClass
 
 		return newInstance
 	end

@@ -1,35 +1,58 @@
 return class("MessageBus",
-{},
-function() return {
+{
+	amourPath("system/classes/List")
+},
+function(List) return {
 
 	singleton = true,
 
 	members = function(self) return {
 
-		messageBusBusy = false,
-		messageBusBusyQueue = Array.create(),
+		_messageBusBusy = false,
+		_messageBusBusyQueue = List.create(),
 
-		generalListeners = Array.create(),
-		eventListeners = Array.create(),
+		_generalListeners = List.create(),
+		_eventListeners = List.create(),
+
+		addEventListener = function(name, callback, source)
+			self._addListener(self._eventListeners, name, callback, source)
+		end,
+		removeEventListener = function(name, callback, source)
+			self._removeListener(self._eventListeners, name, callback, source)
+		end,
+		addListener = function(name, callback, source)
+			self._addListener(self._generalListeners, name, callback, source)
+		end,
+		removeListener = function(name, callback, source)
+			self._removeListener(self._generalListeners, name, callback, source)
+		end,
+
+		sendEventMessage = function(name, source, data)
+			self._sendMessage(self._eventListeners, name, source, data)
+		end,
+
+		sendMessage = function(name, source, data)
+			self._sendMessage(self._generalListeners, name, source, data)
+		end,
 
 		_freeMessageBus = function()
-			self.messageBusBusy = false
+			self._messageBusBusy = false
 
-			self.messageBusBusyQueue.forEach(function(callback)
+			self._messageBusBusyQueue.forEach(function(callback)
 				callback()
 			end)
-			self.messageBusBusyQueue.empty()
+			self._messageBusBusyQueue.empty()
 		end,
 
 		_addListener = function(listeners, name, callback, source)
-			if(self.messageBusBusy) then
-				self.messageBusBusyQueue.push(bind(self._addListener, listeners, name, callback, source))
+			if(self._messageBusBusy) then
+				self._messageBusBusyQueue.push(bind(self._addListener, listeners, name, callback, source))
 			else
 				local targetListener = listeners
 
 				if(source ~= nil) then
 					if(source.listeners == nil) then
-						source.listeners = Array.create()
+						source.listeners = List.create()
 					end
 
 					targetListener = source.listeners
@@ -43,8 +66,8 @@ function() return {
 		end,
 
 		_removeListener = function(listeners, name, callback, source)
-			if(self.messageBusBusy) then
-				self.messageBusBusyQueue.push(bind(self._removeListener, listeners, name, callback, source))
+			if(self._messageBusBusy) then
+				self._messageBusBusyQueue.push(bind(self._removeListener, listeners, name, callback, source))
 			else
 				local targetListener = listeners
 
@@ -61,7 +84,7 @@ function() return {
 		end,
 
 		_sendMessage = function(listeners, name, source, data)
-			self.messageBusBusy = true
+			self._messageBusBusy = true
 
 			local function callListener(listener)
 				if(listener["name"] == name) then
@@ -76,28 +99,8 @@ function() return {
 			end
 
 			self._freeMessageBus()
-		end,
-
-		addEventListener = function(name, callback, source)
-			self._addListener(self.eventListeners, name, callback, source)
-		end,
-		removeEventListener = function(name, callback, source)
-			self._removeListener(self.eventListeners, name, callback, source)
-		end,
-		addListener = function(name, callback, source)
-			self._addListener(self.generalListeners, name, callback, source)
-		end,
-		removeListener = function(name, callback, source)
-			self._removeListener(self.generalListeners, name, callback, source)
-		end,
-
-		sendEventMessage = function(name, source, data)
-			self._sendMessage(self.eventListeners, name, source, data)
-		end,
-
-		sendMessage = function(name, source, data)
-			self._sendMessage(self.generalListeners, name, source, data)
 		end
 
 	} end
+
 }end)
