@@ -1,6 +1,6 @@
 return class("Observer",
 {
-	"amour/system/classes/MessageBus"
+	amourPath("system/classes/MessageBus")
 },
 function(MessageBus) return {
 

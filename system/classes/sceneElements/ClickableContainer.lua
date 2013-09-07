@@ -1,8 +1,8 @@
 return class("ClickableContainer",
 {
-	"amour/system/classes/sceneElements/PositionableContainer",
-	"amour/system/classes/sceneElements/Clickable",
-	"amour/system/classes/Observer"
+	amourPath("system/classes/sceneElements/PositionableContainer"),
+	amourPath("system/classes/sceneElements/Clickable"),
+	amourPath("system/classes/Observer")
 },
 function(PositionableContainer, Clickable, Observer) return {
 

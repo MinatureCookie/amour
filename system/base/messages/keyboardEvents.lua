@@ -1,4 +1,4 @@
-local MessageBus = require("amour/system/classes/MessageBus")
+local MessageBus = require(amourPath("system/classes/MessageBus"))
 
 local messageBus = MessageBus.create()
 
