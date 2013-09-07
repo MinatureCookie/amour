@@ -4,14 +4,14 @@ function() return {
 
 	members = function(self) return {
 
-		x = 0,
-		y = 0,
+		_x = 0,
+		_y = 0,
 
 		setX = function(x)
-			self.x = x
+			self._x = x
 		end,
 		setY = function(y)
-			self.y = y
+			self._y = y
 		end,
 
 		getWidth = function()

@@ -1,8 +1,8 @@
 local MessageBus = require(amourPath("system/classes/MessageBus"))
 
-local messageBus = MessageBus.create()
+local _messageBus = MessageBus.create()
 
-local keyMap = {
+local _keyMap = {
 	["up"] = "up",
 	["w"] = "up",
 	["z"] = "up",
@@ -14,9 +14,9 @@ local keyMap = {
 }
 
 function love.keypressed(key, unicode)
-	messageBus.sendEventMessage("keypressed", nil, {["key"] = keyMap[key], ["unicode"] = unicode})
+	_messageBus.sendEventMessage("keypressed", nil, {["key"] = _keyMap[key], ["unicode"] = unicode})
 end
 
 function love.keyreleased(key, unicode)
-	messageBus.sendEventMessage("keyreleased", nil, {["key"] = keyMap[key], ["unicode"] = unicode})
+	_messageBus.sendEventMessage("keyreleased", nil, {["key"] = _keyMap[key], ["unicode"] = unicode})
 end

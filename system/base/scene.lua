@@ -1,73 +1,72 @@
 local ClickableContainer = require(amourPath("system/classes/sceneElements/ClickableContainer"))
 
-sceneElements = {}
-sceneGlobals = {}
-oldRequire = {}
-currentScene = nil
-stage = ClickableContainer.create()
+local _sceneElements = {}
+local _oldRequire = {}
+local _currentScene = nil
+local _stage = ClickableContainer.create()
 
 function scene(required, initScene)
 	clearScene()
 
-	function sceneElements.addToStage(stageItem)
-		stage.addNew(stageItem)
+	function _sceneElements.addToStage(stageItem)
+		_stage.addNew(stageItem)
 	end
-	function sceneElements.loadScene()
+	function _sceneElements.loadScene()
 	end
-	function sceneElements.updateScene(dt)
+	function _sceneElements.updateScene(dt)
 	end
 
 	local requiredArgs = {n = 0}
 	for index, value in pairs(required) do
 		requiredArgs.n = requiredArgs.n + 1
 		requiredArgs[requiredArgs.n] = require(value)
-		oldRequire[index] = value
+		_oldRequire[index] = value
 	end
 
-	local fieldsAndMethods = initScene(unpack(mergePacked(requiredArgs, {n = 1, [1] = sceneElements})))
+	local fieldsAndMethods = initScene(unpack(mergePacked(requiredArgs, {n = 1, [1] = _sceneElements})))
 	for index, value in pairs(fieldsAndMethods) do
-		sceneElements[index] = value
+		_sceneElements[index] = value
 	end
 
-	sceneElements.loadScene()
+	_sceneElements.loadScene()
 
 	print()
-	print("-----Scene " .. currentScene .. " loaded-----")
+	print("-----Scene " .. _currentScene .. " loaded-----")
 	print()
 end
 
 function changeScene(newScene)
-	if(currentScene ~= nil) then
-		unload(currentScene)
+	if(_currentScene ~= nil) then
+		unload(_currentScene)
 	end
-	currentScene = newScene
+	_currentScene = newScene
 	require(newScene)
 end
 
 function clearScene()
-	for index, value in pairs(sceneElements) do
+	for index, value in pairs(_sceneElements) do
 		if(type(value) == "table" and type(value.destroy) == "function") then
 			value.destroy()
 		end
-		sceneElements[index] = nil
+		_sceneElements[index] = nil
 	end
-	sceneElements = {}
+	_sceneElements = {}
 
-	for index, value in pairs(oldRequire) do
+	for index, value in pairs(_oldRequire) do
 		unload(value)
-		oldRequire[index] = nil
+		_oldRequire[index] = nil
 	end
-	oldRequire = {}
+	_oldRequire = {}
 
-	stage.empty()
+	_stage.empty()
 end
 
 function love.draw()
-	stage.draw()
+	_stage.draw()
 end
 
 function love.update(dt)
-	stage.pollMousePosition()
+	_stage.pollMousePosition()
 
-	sceneElements.updateScene(dt)
+	_sceneElements.updateScene(dt)
 end

@@ -1,10 +1,11 @@
-Array = class("Array",
+return class("List",
 {},
 function() return {
 
 	members = function(self) return {
-		primitive = nil,
-		length = nil,
+
+		_primitive = nil,
+		_length = nil,
 
 		_forEachDeleteQueue = {},
 
@@ -20,8 +21,8 @@ function() return {
 				self.assertType(arr[length])
 			end
 
-			self.primitive = arr
-			self.length = length
+			self._primitive = arr
+			self._length = length
 		end,
 
 		assertType = function(item)
@@ -30,56 +31,62 @@ function() return {
 			end
 
 			if(type(item) ~= self.type) then
-				error("Array expected type " .. self.type .. " but instead got " .. type(item))
+				error("List expected type " .. self.type .. " but instead got " .. type(item))
 			end
 		end,
 
 		push = function(item)
 			self.assertType(item)
 
-			self.length = self.length + 1
-			self.primitive[self.length] = item
+			self._length = self._length + 1
+			self._primitive[self._length] = item
 		end,
 
 		pop = function()
-			local item = self.primitive[self.length]
-			self.length = self.length - 1
+			local item = self._primitive[self._length]
+
+			self._primitive[self._length] = nil
+			self._length = self._length - 1
 
 			return item
 		end,
 
 		empty = function()
-			for index, value in pairs(self.primitive) do
-				self.primitive[index] = nil
+			for index, value in pairs(self._primitive) do
+				self._primitive[index] = nil
 			end
-			self.primitive = {}
-			self.length = 0
+			self._primitive = {}
+			self._length = 0
 		end,
 
 		get = function(index)
-			return self.primitive[index]
+			return self._primitive[index]
 		end,
 
 		delete = function(index)
-			if(self.length > 0) then
-				self.primitive[index] = self.primitive[self.length]
-				self.primitive[self.length] = nil
-				self.length = self.length - 1
+			while(index <= self._length) do
+				self._primitive[index] = self._primitive[index + 1]
+				index = index + 1
 			end
+
+			self._length = self._length - 1
 		end,
 
 		first = function()
-			return self.primitive[1]
+			return self._primitive[1]
 		end,
-
 		last = function()
-			return self.primitive[self.length]
+			return self._primitive[self._length]
+		end,
+		
+		length = function()
+			return self._length
 		end,
 
 		forEach = function(callback)
 			local index = 1
-			while(index <= self.length) do
-				local result = callback(self.primitive[index], index)
+			while(index <= self._length) do
+				local result = callback(self._primitive[index], index)
 
 				if(result == false) then
 					break
@@ -105,5 +112,3 @@ function() return {
 	} end
 
 }end)
-
-return Array

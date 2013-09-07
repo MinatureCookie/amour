@@ -1,18 +1,18 @@
 local MessageBus = require(amourPath("system/classes/MessageBus"))
 
-local messageBus = MessageBus.create()
-local mousePressedIsDown = false
+local _messageBus = MessageBus.create()
+local _mousePressedIsDown = false
 
 function love.mousepressed(x, y, button)
-	if(button == "l" and not(mousePressedIsDown)) then
-		mousePressedIsDown = true
-		messageBus.sendEventMessage("mousepressed", nil, {["x"] = x, ["y"] = y})
+	if(button == "l" and not(_mousePressedIsDown)) then
+		_mousePressedIsDown = true
+		_messageBus.sendEventMessage("mousepressed", nil, {["x"] = x, ["y"] = y})
 	end
 end
 
 function love.mousereleased(x, y, button)
 	if(button == "l") then
-		mousePressedIsDown = false
-		messageBus.sendEventMessage("mousereleased", nil, {["x"] = x, ["y"] = y})
+		_mousePressedIsDown = false
+		_messageBus.sendEventMessage("mousereleased", nil, {["x"] = x, ["y"] = y})
 	end
 end

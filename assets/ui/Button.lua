@@ -8,54 +8,77 @@ function(Clickable) return {
 
 	members = function(self) return {
 
-		align = "left",
-		color = {255, 255, 255},
-		font = love.graphics.newFont("fonts/KBPlanetEarth.ttf", 36),
-		x = nil,
-		y = nil,
-		width = nil,
-		callback = nil,
+		_align = "left",
+		_color = nil,
+		_colorNormal = {255, 255, 255},
+		_colorHover = {230, 20, 0},
+		_colorActive = {150, 0, 0},
+		_font = love.graphics.newFont(14),
+		_callback = nil,
+		_parent = nil,
 
 		init = function(value, x, y, width, callback)
 			self.super.init()
 
-			self.value = value
-			self.callback = callback
-			self.x = x
-			self.y = y
-			self.width = width
+			self._value = value
+			self._callback = callback
+			self._x = x
+			self._y = y
+			self._width = width
+			self._color = self._colorNormal
+		end,
+
+		setParent = function(parent)
+			self._parent = parent
 		end,
 
 		setAlign = function(align)
-			self.align = align
+			self._align = align
 		end,
 
 		setFont = function(font)
-			self.font = font
+			if(type(font) == "string") then
+				self._font = love.graphics.newFont(font, 14)
+			else
+				self._font = font
+			end
 		end,
 
 		setFocus = function()
-			self.color = {200, 20, 50}
+			self._color = self._colorHover
 		end,
 		unFocus = function()
-			self.color = {255, 255, 255}
+			self._color = self._colorNormal
+		end,
+		handleMousePressed = function()
+			self._color = self._colorActive
 		end,
 
 		select = function()
-			if(type(self.callback) == "function") then
-				self.callback()
+			if(type(self._callback) == "function") then
+				self._callback()
 			end
 		end,
 
 		getWidth = function()
-			return self.width
+			return self._width
 		end,
 		getHeight = function()
-			return self.font:getHeight()
+			return self._font:getHeight()
+		end,
+
+		getX = function()
+			return self._x
+		end,
+		getY = function()
+			return self._y
 		end,
 
 		handleFocus = function()
 			self.setFocus()
+			if(self._parent ~= nil) then
+				self._parent.handleItemFocus(self)
+			end
 		end,
 		handleBlur = function()
 			self.unFocus()
@@ -67,12 +90,15 @@ function(Clickable) return {
 
 		draw = function()
 			local oldR, oldG, oldB = love.graphics.getColor()
+			local oldFont = love.graphics.getFont()
 
-			love.graphics.setColor(self.color)
-			love.graphics.setFont(self.font)
-			love.graphics.printf(self.value, self.x, self.y, self.width, self.align)
+			love.graphics.setColor(self._color)
+			love.graphics.setFont(self._font)
+
+			love.graphics.printf(self._value, self._x, self._y, self._width, self._align)
 
 			love.graphics.setColor(oldR, oldG, oldB)
+			love.graphics.setFont(oldFont)
 		end
 
 	} end
