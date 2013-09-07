@@ -12,8 +12,8 @@ function(Observer, Positionable) return {
 		_observer = Observer.create(),
 
 		init = function()
-			self._observer.addEventListener("mousepressed", self.handleMousePressed)
-			self._observer.addEventListener("mouseover", self.handleMouseOver, self)
+			self._observer.addEventListener("mousepressed", self._handleMousePressedSomewhere)
+			self._observer.addEventListener("mouseover", self._handleMouseOver, self)
 		end,
 
 		isHitBy = function(x, y)
@@ -23,34 +23,13 @@ function(Observer, Positionable) return {
 					and y > self._y)
 		end,
 
-		handleMouseOver = function()
-			self._observer.removeEventListener("mouseover", self.handleMouseOver, self)
-			self._observer.addEventListener("mouseout", self.handleMouseOut, self)
-
-			self.handleFocus()
-		end,
-
-		handleMouseOut = function()
-			self._observer.addEventListener("mouseover", self.handleMouseOver, self)
-			self._observer.removeEventListener("mouseout", self.handleMouseOut, self)
-
-			self.handleBlur()
-		end,
-
-		handleMousePressed = function(data)
-			if(self.isHitBy(data["x"], data["y"])) then
-				self._observer.addEventListener("mousereleased", self.handleMouseReleased)
-			end
-		end,
-
-		handleMouseReleased = function(data)
-			self._observer.removeEventListener("mousereleased", self.handleMouseReleased)
-			if(self.isHitBy(data["x"], data["y"])) then
-				self.handleClick()
-			end
-		end,
-
 		handleClick = function()
+		end,
+
+		handleMousePressed = function()
+		end,
+
+		handleMouseReleased = function()
 		end,
 
 		handleFocus = function()
@@ -60,7 +39,36 @@ function(Observer, Positionable) return {
 		end,
 
 		destroy = function()
-			self._observer.removeEventListener("mousepressed", self.handleMousePressed)
+			self._observer.removeEventListener("mousepressed", self._handleMousePressedSomewhere)
+		end,
+
+		_handleMouseOver = function()
+			self._observer.removeEventListener("mouseover", self._handleMouseOver, self)
+			self._observer.addEventListener("mouseout", self._handleMouseOut, self)
+
+			self.handleFocus()
+		end,
+
+		_handleMouseOut = function()
+			self._observer.addEventListener("mouseover", self._handleMouseOver, self)
+			self._observer.removeEventListener("mouseout", self._handleMouseOut, self)
+
+			self.handleBlur()
+		end,
+
+		_handleMousePressedSomewhere = function(data)
+			if(self.isHitBy(data["x"], data["y"])) then
+				self.handleMousePressed()
+				self._observer.addEventListener("mousereleased", self._handleMouseReleasedSomewhere)
+			end
+		end,
+
+		_handleMouseReleasedSomewhere = function(data)
+			self._observer.removeEventListener("mousereleased", self._handleMouseReleasedSomewhere)
+			if(self.isHitBy(data["x"], data["y"])) then
+				self.handleMouseReleased()
+				self.handleClick()
+			end
 		end
 
 	} end

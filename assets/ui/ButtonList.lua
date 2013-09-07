@@ -14,6 +14,7 @@ function(Observer, ClickableContainer, Button) return {
 		_focus = false,
 		_currentFocus = 1,
 		_width = nil,
+		_font = love.graphics.newFont(14),
 
 		init = function(x, y, width)
 			self.super.init()
