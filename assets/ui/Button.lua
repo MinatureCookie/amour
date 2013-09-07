@@ -32,7 +32,11 @@ function(Clickable) return {
 		end,
 
 		setFont = function(font)
-			self._font = font
+			if(type(font) == "string") then
+				self._font = love.graphics.newFont(font, 14)
+			else
+				self._font = font
+			end
 		end,
 
 		setFocus = function()

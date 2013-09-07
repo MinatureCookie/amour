@@ -11,7 +11,11 @@ function(Positionable) return {
 		_image = nil,
 
 		init = function(image, x, y)
-			self._image = love.graphics.newImage(image)
+			if(type(image) == "string") then
+				self._image = love.graphics.newImage(image)
+			else
+				self._image = image
+			end
 
 			if(x ~= nil) then
 				self._x = x
