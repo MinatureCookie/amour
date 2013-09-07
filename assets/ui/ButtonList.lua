@@ -83,8 +83,20 @@ function(Observer, ClickableContainer, Button) return {
 			local newButton = Button.create(text, self._x, newY, self._width, callback)
 			newButton.setFont(font)
 			newButton.setAlign(self._align)
+			newButton.setParent(self)
 
 			self.super.addNew(newButton)
+		end,
+
+		handleItemFocus = function(item)
+			self._positionables.forEach(function(button, index)
+				if(button == item) then
+					self._currentFocus = index
+					button.setFocus()
+				else
+					button.unFocus()
+				end
+			end)
 		end,
 
 		destroy = function()
@@ -118,7 +130,7 @@ function(Observer, ClickableContainer, Button) return {
 		end,
 
 		_handleEnterPress = function()
-			if(self.focus) then
+			if(self._focus) then
 				self._positionables.get(self._currentFocus).select()
 			end
 		end,

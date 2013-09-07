@@ -15,6 +15,7 @@ function(Clickable) return {
 		_colorActive = {150, 0, 0},
 		_font = love.graphics.newFont(14),
 		_callback = nil,
+		_parent = nil,
 
 		init = function(value, x, y, width, callback)
 			self.super.init()
@@ -25,6 +26,10 @@ function(Clickable) return {
 			self._y = y
 			self._width = width
 			self._color = self._colorNormal
+		end,
+
+		setParent = function(parent)
+			self._parent = parent
 		end,
 
 		setAlign = function(align)
@@ -71,6 +76,9 @@ function(Clickable) return {
 
 		handleFocus = function()
 			self.setFocus()
+			if(self._parent ~= nil) then
+				self._parent.handleItemFocus(self)
+			end
 		end,
 		handleBlur = function()
 			self.unFocus()
