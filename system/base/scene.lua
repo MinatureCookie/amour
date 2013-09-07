@@ -1,4 +1,4 @@
-local ClickableContainer = require("amour/system/classes/sceneElements/ClickableContainer")
+local ClickableContainer = require(amourPath("system/classes/sceneElements/ClickableContainer"))
 
 sceneElements = {}
 sceneGlobals = {}

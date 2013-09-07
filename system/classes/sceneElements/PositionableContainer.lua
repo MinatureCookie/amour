@@ -1,6 +1,6 @@
 return class("PositionableContainer",
 {
-	"amour/system/classes/sceneElements/Positionable"
+	amourPath("system/classes/sceneElements/Positionable")
 },
 function(Positionable) return {
 

@@ -1,8 +1,8 @@
 return class("ButtonList",
 {
-	"amour/system/classes/Observer",
-	"amour/system/classes/sceneElements/ClickableContainer",
-	"amour/assets/ui/Button"
+	amourPath("system/classes/Observer"),
+	amourPath("system/classes/sceneElements/ClickableContainer"),
+	amourPath("assets/ui/Button")
 },
 function(Observer, ClickableContainer, Button) return {
 

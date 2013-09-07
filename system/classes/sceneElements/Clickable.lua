@@ -1,7 +1,7 @@
 return class("Clickable",
 {
-	"amour/system/classes/Observer",
-	"amour/system/classes/sceneElements/Positionable"
+	amourPath("system/classes/Observer"),
+	amourPath("system/classes/sceneElements/Positionable")
 },
 function(Observer, Positionable) return {
 

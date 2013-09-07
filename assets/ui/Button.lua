@@ -1,6 +1,6 @@
 return class("Button",
 {
-	"amour/system/classes/sceneElements/Clickable"
+	amourPath("system/classes/sceneElements/Clickable")
 },
 function(Clickable) return {
 
