@@ -1,3 +1,7 @@
+local _newClassStatics, _initInstanceFieldsAndMethods, _filterForMethods, _generateSuper,
+		_handleInstanceAccess, _attemptToResolveKey, _newClassDestroy, _newClassCreate,
+		_newClassIsA
+
 function class(name, required, uninstantiatedInitClass)
 	local requiredArgs = {n = 0}
 	for index, value in pairs(required) do

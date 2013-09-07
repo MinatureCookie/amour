@@ -9,42 +9,42 @@ function(Observer, Positionable) return {
 
 	members = function(self) return {
 
-		observer = Observer.create(),
+		_observer = Observer.create(),
 
 		init = function()
-			self.observer.addEventListener("mousepressed", self.handleMousePressed)
-			self.observer.addEventListener("mouseover", self.handleMouseOver, self)
+			self._observer.addEventListener("mousepressed", self.handleMousePressed)
+			self._observer.addEventListener("mouseover", self.handleMouseOver, self)
 		end,
 
 		isHitBy = function(x, y)
-			return (x < self.x + self.getWidth()
-					and x > self.x
-					and y < self.y + self.getHeight()
-					and y > self.y)
+			return (x < self._x + self.getWidth()
+					and x > self._x
+					and y < self._y + self.getHeight()
+					and y > self._y)
 		end,
 
 		handleMouseOver = function()
-			self.observer.removeEventListener("mouseover", self.handleMouseOver, self)
-			self.observer.addEventListener("mouseout", self.handleMouseOut, self)
+			self._observer.removeEventListener("mouseover", self.handleMouseOver, self)
+			self._observer.addEventListener("mouseout", self.handleMouseOut, self)
 
 			self.handleFocus()
 		end,
 
 		handleMouseOut = function()
-			self.observer.addEventListener("mouseover", self.handleMouseOver, self)
-			self.observer.removeEventListener("mouseout", self.handleMouseOut, self)
+			self._observer.addEventListener("mouseover", self.handleMouseOver, self)
+			self._observer.removeEventListener("mouseout", self.handleMouseOut, self)
 
 			self.handleBlur()
 		end,
 
 		handleMousePressed = function(data)
 			if(self.isHitBy(data["x"], data["y"])) then
-				self.observer.addEventListener("mousereleased", self.handleMouseReleased)
+				self._observer.addEventListener("mousereleased", self.handleMouseReleased)
 			end
 		end,
 
 		handleMouseReleased = function(data)
-			self.observer.removeEventListener("mousereleased", self.handleMouseReleased)
+			self._observer.removeEventListener("mousereleased", self.handleMouseReleased)
 			if(self.isHitBy(data["x"], data["y"])) then
 				self.handleClick()
 			end
@@ -60,7 +60,7 @@ function(Observer, Positionable) return {
 		end,
 
 		destroy = function()
-			self.observer.removeEventListener("mousepressed", self.handleMousePressed)
+			self._observer.removeEventListener("mousepressed", self.handleMousePressed)
 		end
 
 	} end

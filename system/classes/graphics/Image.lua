@@ -7,27 +7,29 @@ function(Positionable) return {
 	inherits = Positionable,
 
 	members = function(self) return {
+		
+		_image = nil,
 
 		init = function(image, x, y)
-			self.image = love.graphics.newImage(image)
+			self._image = love.graphics.newImage(image)
 
 			if(x ~= nil) then
-				self.x = x
+				self._x = x
 			end
 			if(y ~= nil) then
-				self.y = y
+				self._y = y
 			end
 		end,
 
 		getWidth = function()
-			return self.image:getWidth()
+			return self._image:getWidth()
 		end,
 		getHeight = function()
-			return self.image:getHeight()
+			return self._image:getHeight()
 		end,
 
 		draw = function()
-			love.graphics.draw(self.image, self.x, self.y)
+			love.graphics.draw(self._image, self._x, self._y)
 		end
 
 	} end
