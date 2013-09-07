@@ -1,4 +1,4 @@
-return class("Array",
+return class("List",
 {},
 function() return {
 
@@ -31,7 +31,7 @@ function() return {
 			end
 
 			if(type(item) ~= self.type) then
-				error("Array expected type " .. self.type .. " but instead got " .. type(item))
+				error("List expected type " .. self.type .. " but instead got " .. type(item))
 			end
 		end,
 
@@ -44,6 +44,8 @@ function() return {
 
 		pop = function()
 			local item = self._primitive[self._length]
+
+			self._primitive[self._length] = nil
 			self._length = self._length - 1
 
 			return item
@@ -62,11 +64,12 @@ function() return {
 		end,
 
 		delete = function(index)
-			if(self._length > 0) then
-				self._primitive[index] = self._primitive[self._length]
-				self._primitive[self._length] = nil
-				self._length = self._length - 1
+			while(index <= self._length) do
+				self._primitive[index] = self._primitive[index + 1]
+				index = index + 1
 			end
+
+			self._length = self._length - 1
 		end,
 
 		first = function()

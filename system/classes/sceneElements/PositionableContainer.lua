@@ -1,23 +1,23 @@
 return class("PositionableContainer",
 {
 	amourPath("system/classes/sceneElements/Positionable"),
-	amourPath("system/classes/Array")
+	amourPath("system/classes/List")
 },
-function(Positionable, Array) return {
+function(Positionable, List) return {
 
 	inherits = Positionable,
 
 	members = function(self) return {
 
-		_positionables = Array.create(),
+		_positionables = List.create(),
 
 		init = function(newPositionables)
 			if(newPositionables == nil) then
-				self._positionables = Array.create()
-			elseif(newPositionables.isA(Array)) then
+				self._positionables = List.create()
+			elseif(newPositionables.isA(List)) then
 				self._positionables = newPositionables
 			else
-				self._positionables = Array.create(newPositionables)
+				self._positionables = List.create(newPositionables)
 			end
 		end,
 

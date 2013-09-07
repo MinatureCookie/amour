@@ -1,18 +1,18 @@
 return class("MessageBus",
 {
-	amourPath("system/classes/Array")
+	amourPath("system/classes/List")
 },
-function(Array) return {
+function(List) return {
 
 	singleton = true,
 
 	members = function(self) return {
 
 		_messageBusBusy = false,
-		_messageBusBusyQueue = Array.create(),
+		_messageBusBusyQueue = List.create(),
 
-		_generalListeners = Array.create(),
-		_eventListeners = Array.create(),
+		_generalListeners = List.create(),
+		_eventListeners = List.create(),
 
 		addEventListener = function(name, callback, source)
 			self._addListener(self._eventListeners, name, callback, source)
@@ -52,7 +52,7 @@ function(Array) return {
 
 				if(source ~= nil) then
 					if(source.listeners == nil) then
-						source.listeners = Array.create()
+						source.listeners = List.create()
 					end
 
 					targetListener = source.listeners
