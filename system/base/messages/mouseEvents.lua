@@ -1,5 +1,4 @@
-local MessageBus = require("amour/system/classes/MessageBus")
-local Clickable = require("amour/system/classes/sceneElements/Clickable")
+local MessageBus = require(amourPath("system/classes/MessageBus"))
 
 local messageBus = MessageBus.create()
 local mousePressedIsDown = false
