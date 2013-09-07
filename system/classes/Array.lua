@@ -1,4 +1,4 @@
-Array = class("Array",
+return class("Array",
 {},
 function() return {
 
@@ -109,5 +109,3 @@ function() return {
 	} end
 
 }end)
-
-return Array

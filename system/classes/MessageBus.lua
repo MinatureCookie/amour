@@ -1,6 +1,8 @@
 return class("MessageBus",
-{},
-function() return {
+{
+	amourPath("system/classes/Array")
+},
+function(Array) return {
 
 	singleton = true,
 

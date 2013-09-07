@@ -1,9 +1,9 @@
 local pathOfThisFile = ...
 AMOUR_ROOT = pathOfThisFile:sub(0, -5)
 
-require(AMOUR_ROOT .. "primitives/methods/amourPath")
+require(AMOUR_ROOT .. "primitives/amourPath")
 
-require(amourPath("primitives/methods/requiring/requireAll"))
+require(amourPath("primitives/requiring/requireAll"))
 
 requireAll({
 	amourPath("primitives"),

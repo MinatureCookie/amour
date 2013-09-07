@@ -1,8 +1,9 @@
 return class("PositionableContainer",
 {
-	amourPath("system/classes/sceneElements/Positionable")
+	amourPath("system/classes/sceneElements/Positionable"),
+	amourPath("system/classes/Array")
 },
-function(Positionable) return {
+function(Positionable, Array) return {
 
 	inherits = Positionable,
 
