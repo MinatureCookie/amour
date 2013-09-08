@@ -5,6 +5,19 @@ local _oldRequire = {}
 local _currentScene = nil
 local _stage = ClickableContainer.create()
 
+--[[
+	Function: scene
+
+	Package:
+		amour/system/base
+
+	Description:
+		Clears the old scene, and sets the new scene as this one
+
+	Parameters:
+		required - An object list of string locations to assets required by the scene
+		initScene - A context function providing context for 'required', and the stage
+--]]
 function scene(required, initScene)
 	clearScene()
 
@@ -35,6 +48,18 @@ function scene(required, initScene)
 	print()
 end
 
+--[[
+	Function: changeScene
+
+	Package:
+		amour/system/base
+
+	Description:
+		Loads a scene file, and changes to scene to new one
+
+	Parameters:
+		newScene - A string location to the scene file we want to load
+--]]
 function changeScene(newScene)
 	if(_currentScene ~= nil) then
 		unload(_currentScene)
@@ -43,6 +68,15 @@ function changeScene(newScene)
 	require(newScene)
 end
 
+--[[
+	Function: clearScene
+
+	Package:
+		amour/system/base
+
+	Description:
+		Clears the current scene (is called automatically by 'scene'
+--]]
 function clearScene()
 	for index, value in pairs(_sceneElements) do
 		if(type(value) == "table" and type(value.destroy) == "function") then

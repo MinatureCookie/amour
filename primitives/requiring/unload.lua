@@ -1,3 +1,15 @@
+--[[
+	Function: unload
+
+	Package:
+		amour/primitives/requiring
+
+	Description:
+		Unloads the asset previously required, as long as it's not required elsewhere
+
+	Parameters:
+		unrequired - String location of the asset no longer required
+--]]
 function unload(unrequired)
 	local success = true
 

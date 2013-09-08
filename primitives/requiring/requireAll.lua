@@ -1,3 +1,15 @@
+--[[
+	Function: requireAll
+
+	Package:
+		amour/primitives/requiring
+
+	Description:
+		Recursively calls require on all files in the specified directory, and its sub-directories
+
+	Parameters:
+		dirs - A string to a directory location, or an object collection of strings to directory locations
+--]]
 function requireAll(dirs)
 	if(type(dirs) == "string") then
 		dirs = {dirs}
