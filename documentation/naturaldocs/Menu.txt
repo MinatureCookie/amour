@@ -46,12 +46,52 @@ Format: 1.52
 # --------------------------------------------------------------------------
 
 
+Group: Primitives  {
+
+   File: mergePacked  (primitives\packing\mergePacked.lua)
+   File: pack  (primitives\packing\pack.lua)
+   File: require  (primitives\requiring\require.lua)
+   File: requireAll  (primitives\requiring\requireAll.lua)
+   File: unload  (primitives\requiring\unload.lua)
+   }  # Group: Primitives
+
+File: Button  (assets\ui\Button.lua)
 File: ButtonList  (assets\ui\ButtonList.lua)
+
+Group: Primitives  {
+
+   File: amourPath  (primitives\amourPath.lua)
+   File: bind  (primitives\bind.lua)
+   File: class  (primitives\class.lua)
+   }  # Group: Primitives
+
+Group: System  {
+
+   Group: Classes  {
+
+      File: Image  (system\classes\graphics\Image.lua)
+      File: List  (system\classes\List.lua)
+      File: MessageBus  (system\classes\MessageBus.lua)
+      File: Observer  (system\classes\Observer.lua)
+
+      Group: SceneElements  {
+
+         File: Clickable  (system\classes\sceneElements\Clickable.lua)
+         File: ClickableContainer  (system\classes\sceneElements\ClickableContainer.lua)
+         File: Positionable  (system\classes\sceneElements\Positionable.lua)
+         File: PositionableContainer  (system\classes\sceneElements\PositionableContainer.lua)
+         }  # Group: SceneElements
+
+      }  # Group: Classes
+
+   File: scene.lua  (system\base\scene.lua)
+   }  # Group: System
 
 Group: Index  {
 
    Index: Everything
    Class Index: Classes
    Function Index: Functions
+   File Index: Files
    }  # Group: Index
 
