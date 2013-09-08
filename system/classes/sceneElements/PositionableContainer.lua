@@ -1,3 +1,15 @@
+--[[
+	Class: PositionableContainer
+
+	Package:
+		amour/system/classes/sceneElements
+
+	Extends:
+		<Positionable>
+
+	Description:
+		A collection of positionable elements that will all be drawn when it is
+--]]
 return class("PositionableContainer",
 {
 	amourPath("system/classes/sceneElements/Positionable"),
@@ -11,6 +23,12 @@ function(Positionable, List) return {
 
 		_positionables = List.create(),
 
+		--[[
+			Function: init
+
+			Parameters:
+				newPositionables - An object list, or a <List>, of elements to originally add. (Can be nil)
+		--]]
 		init = function(newPositionables)
 			if(newPositionables == nil) then
 				self._positionables = List.create()
@@ -21,20 +39,44 @@ function(Positionable, List) return {
 			end
 		end,
 
+		--[[
+			Function: addNew
+
+			Parameters:
+				newPositionable - A positionable element to add to this container
+		--]]
 		addNew = function(newPositionable)
 			self._positionables.push(newPositionable)
 		end,
 
+		--[[
+			Function: empty
+
+			Description:
+				Empties the container of all of its current elements
+		--]]
 		empty = function()
 			self._positionables.empty()
 		end,
 
+		--[[
+			Function: draw
+
+			Description:
+				Draws all of the elements in the container
+		--]]
 		draw = function()
 			self._positionables.forEach(function(value)
 				value.draw()
 			end)
 		end,
 
+		--[[
+			Function: destroy
+
+			Description:
+				Prepare the current container, and all of its elements, for destruction
+		--]]
 		destroy = function()
 			self._positionables.forEach(function(value)
 				value.destroy()

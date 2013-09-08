@@ -1,3 +1,19 @@
+--[[
+	Class: ButtonList
+
+	Package:
+		amour/assets/ui
+
+	Extends:
+		<ClickableContainer>
+
+
+	Description:
+		A vertical list of Button assets
+
+	See Also:
+		<Button>
+--]]
 return class("ButtonList",
 {
 	amourPath("system/classes/Observer"),
@@ -16,6 +32,14 @@ function(Observer, ClickableContainer, Button) return {
 		_width = nil,
 		_font = love.graphics.newFont(14),
 
+		--[[
+			Function: init
+
+			Parameters:
+				x - The original x coordinate of the button list
+				y - The original y coordinate of the button list
+				width - The original width of the button list
+		--]]
 		init = function(x, y, width)
 			self.super.init()
 
@@ -26,18 +50,42 @@ function(Observer, ClickableContainer, Button) return {
 			self._observer.addEventListener("keypressed", self._handleKeyPress)
 		end,
 
+		--[[
+			Function: setAlign
+
+			Parameters:
+				align - "left", "center", or "right", how to align the buttons within the button list
+		--]]
 		setAlign = function(align)
 			self._align = align
 		end,
 
+		--[[
+			Function: setPadding
+
+			Parameters:
+				padding - How many pixels to pad between each button in the button list
+		--]]
 		setPadding = function(padding)
 			self._padding = padding
 		end,
 
+		--[[
+			Function: setFont
+
+			Parameters:
+				font - A love.graphics font (or a string location of a font), to set as the buttons' font
+		--]]
 		setFont = function(font)
 			self._font = font
 		end,
 
+		--[[
+			Function: setY
+
+			Parameters:
+				y - The new y coordinate of the button list
+		--]]
 		setY = function(y)
 			local dif = self._y - y
 			self._y = y
@@ -47,9 +95,21 @@ function(Observer, ClickableContainer, Button) return {
 			end)
 		end,
 
+		--[[
+			Function: getWidth
+
+			Returns:
+				The current width of the button list
+		--]]
 		getWidth = function()
 			return self._width
 		end,
+		--[[
+			Function: getHeight
+
+			Returns:
+				The current height of the button list
+		--]]
 		getHeight = function()
 			local countedHeight = 0
 			self._positionables.forEach(function(button)
@@ -59,16 +119,39 @@ function(Observer, ClickableContainer, Button) return {
 			return countedHeight
 		end,
 
+		--[[
+			Function: setFocus
+
+			Description:
+				Sets the button list as in focus, allowing its navigation and use
+		--]]
 		setFocus = function()
 			if(self._positionables.length() ~= 0) then
 				self._focus = true
 				(self._positionables.get(self._currentFocus)).setFocus()
 			end
 		end,
+		--[[
+			Function: unFocus
+
+			Description:
+				Sets the button list as out of focus, disabling its navigation and use
+		--]]
 		unFocus = function()
 			self._focus = false
 		end,
 
+		--[[
+			Function: addNew
+
+			Description:
+				Adds a new button to the button list, auto-positioned to the correct place
+
+			Parameters:
+				text - The text to set the new button with
+				callback - The callback method for the button's click event
+				font - A custom font for this particular button (leave nil to inherit from button list)
+		--]]
 		addNew = function(text, callback, font)
 			local newY = self._y
 			local last = self._positionables.last()
@@ -88,6 +171,15 @@ function(Observer, ClickableContainer, Button) return {
 			self.super.addNew(newButton)
 		end,
 
+		--[[
+			Function: handleItemFocus
+
+			Description:
+				Handles what to do if a sub element has focused itself beyond the button list's knowledge
+
+			Parameters:
+				item - The button in the button list that has focused itself
+		--]]
 		handleItemFocus = function(item)
 			self._positionables.forEach(function(button, index)
 				if(button == item) then
@@ -99,6 +191,12 @@ function(Observer, ClickableContainer, Button) return {
 			end)
 		end,
 
+		--[[
+			Function: destroy
+
+			Description:
+				Prepares the button list for destruction
+		--]]
 		destroy = function()
 			self._observer.removeEventListener("keypressed", self._handleKeyPress)
 
