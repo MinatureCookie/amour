@@ -2,6 +2,23 @@ local _newClassStatics, _initInstanceFieldsAndMethods, _filterForMethods, _gener
 		_handleInstanceAccess, _attemptToResolveKey, _newClassDestroy, _newClassCreate,
 		_newClassIsA
 
+--[[
+	Function: class
+
+	Package:
+		amour/primitives
+
+	Description:
+		Create a class, that can be instantiated as a class instance
+
+	Parameters:
+		name - The name of the class
+		required - An object list of strings, locations of assets required by this class
+		uninstantiatedInitClass - A context function to provide context for 'required'
+
+	Returns:
+		A class, ready to instantiated as a class instance
+--]]
 function class(name, required, uninstantiatedInitClass)
 	local requiredArgs = {n = 0}
 	for index, value in pairs(required) do
