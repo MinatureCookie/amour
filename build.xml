@@ -15,7 +15,9 @@
 				classpath="${amourdir}ant/classes"
 				classname="amour.ant.GenerateIgnores"
 				failonerror="yes"
-				output="${temp}/ignores.txt" />
+				output="${temp}/ignores.txt">
+			<arg value="${basedir}" />
+		</java>
 
 		<loadfile
 				property="ignores"
