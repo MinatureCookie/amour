@@ -1,0 +1,7 @@
+.git
+.gitignore
+ant
+documentation
+build.xml
+*.md
+*.bat

@@ -1,0 +1,59 @@
+<project name="amour-game" default="zipOutputSafe">
+	<property name="output" value="output.love" />
+	<property name="amourdir" value="" />
+	<property name="temp" value=".TEMP-AMOUR-ANT-BUILD" />
+
+	<target name="generateIgnores">
+		<mkdir dir="${amourdir}ant/classes" />
+		<mkdir dir="${temp}" />
+
+		<javac
+				srcdir="${amourdir}ant"
+				destdir="${amourdir}ant/classes"
+				includeantruntime="false" />
+		<java
+				classpath="${amourdir}ant/classes"
+				classname="amour.ant.GenerateIgnores"
+				failonerror="yes"
+				output="${temp}/ignores.txt" />
+
+		<loadfile
+				property="ignores"
+				srcFile="${temp}/ignores.txt" />
+
+		<delete dir="${temp}" />
+		<delete dir="ant/classes" />
+	</target>
+
+	<target name="outputCheck">
+		<available file="${output}" property="outputCheck.exists" />
+	</target>
+	<target name="removeOutputCheck" depends="outputCheck" if="outputCheck.exists">
+		<input message="${output} already exists. Overwrite it? (y/n)"
+		       validargs="y,n"
+		       addproperty="overwrite" />
+
+		<condition property="abort">
+			<equals arg1="n" arg2="${overwrite}" />
+		</condition>
+
+		<fail if="abort">Cannot save ${output}, file already exists.</fail>
+	</target>
+
+	<target name="zipOutput" depends="generateIgnores">
+		<delete file="${output}" />
+		<zip
+				basedir="."
+				destfile="${output}"
+				excludes="**/.loveignore/**, ${ignores}" />
+	</target>
+
+	<target name="zipOutputSafe" depends="removeOutputCheck, zipOutput" />
+
+	<target name="runOutput" depends="outputCheck" if="outputCheck.exists">
+		<exec executable="love">
+			<arg value="${output}" />
+			<arg value="--console" />
+		</exec>
+	</target>
+</project>
