@@ -3,14 +3,39 @@
 	<property name="amourdir" value="" />
 	<property name="temp" value=".TEMP-AMOUR-ANT-BUILD" />
 
-	<target name="generateIgnores">
-		<mkdir dir="${amourdir}ant/classes" />
-		<mkdir dir="${temp}" />
+	<target name="zipOutput" depends="-generateClassFiles, -generateIgnores, -generateTempGame, -minifyTempGame, -cleanUpClassFiles">
+		<delete file="${output}" />
+		<zip
+				basedir="${temp}"
+				destfile="${output}" />
 
+		<delete dir="${temp}" />
+	</target>
+
+	<target name="zipOutputSafe" depends="-removeOutputCheck, zipOutput" />
+
+	<target name="runOutput" depends="-outputCheck" if="outputCheck.exists">
+		<exec executable="love">
+			<arg value="${output}" />
+			<arg value="--console" />
+		</exec>
+	</target>
+
+	<target name="-generateClassFiles">
+		<mkdir dir="${amourdir}ant/classes" />
 		<javac
 				srcdir="${amourdir}ant"
 				destdir="${amourdir}ant/classes"
 				includeantruntime="false" />
+	</target>
+
+	<target name="-cleanUpClassFiles">
+		<delete dir="${amourdir}ant/classes" />
+	</target>
+
+	<target name="-generateIgnores">
+		<mkdir dir="${temp}" />
+
 		<java
 				classpath="${amourdir}ant/classes"
 				classname="amour.ant.GenerateIgnores"
@@ -24,13 +49,12 @@
 				srcFile="${temp}/ignores.txt" />
 
 		<delete dir="${temp}" />
-		<delete dir="ant/classes" />
 	</target>
 
-	<target name="outputCheck">
+	<target name="-outputCheck">
 		<available file="${output}" property="outputCheck.exists" />
 	</target>
-	<target name="removeOutputCheck" depends="outputCheck" if="outputCheck.exists">
+	<target name="-removeOutputCheck" depends="-outputCheck" if="outputCheck.exists">
 		<input message="${output} already exists. Overwrite it? (y/n)"
 		       validargs="y,n"
 		       addproperty="overwrite" />
@@ -42,20 +66,21 @@
 		<fail if="abort">Cannot save ${output}, file already exists.</fail>
 	</target>
 
-	<target name="zipOutput" depends="generateIgnores">
-		<delete file="${output}" />
-		<zip
-				basedir="."
-				destfile="${output}"
-				excludes="**/.loveignore/**, ${ignores}" />
+	<target name="-generateTempGame">
+		<mkdir dir="${temp}" />
+		<copy todir="${temp}" includeemptydirs="false">
+			<fileset dir="." excludes="**/.loveignore/**, ${output}, ${ignores}" />
+		</copy>
 	</target>
 
-	<target name="zipOutputSafe" depends="removeOutputCheck, zipOutput" />
-
-	<target name="runOutput" depends="outputCheck" if="outputCheck.exists">
-		<exec executable="love">
-			<arg value="${output}" />
-			<arg value="--console" />
-		</exec>
+	<target name="-minifyTempGame">
+		<java
+				classpath="${amourdir}ant/classes"
+				classname="amour.ant.MinifyGame"
+				failonerror="yes">
+			<arg value="${basedir}" />
+			<arg value="${temp}" />
+		</java>
 	</target>
+
 </project>
