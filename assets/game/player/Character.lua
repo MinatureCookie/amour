@@ -58,7 +58,9 @@ function(Positionable, Observer) return {
 		end,
 
 		draw = function()
-			love.graphics.draw(self._directionImageMap[self._characterDirection], self._x, self._y)
+			local x = math.floor(self._x)
+			local y = math.floor(self._y)
+			love.graphics.draw(self._directionImageMap[self._characterDirection], x, y)
 		end,
 
 		setHandleVelocity = function(f)

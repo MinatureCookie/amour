@@ -51,9 +51,7 @@ function(Positionable) return {
 			self._tileWidth = tiledDetails.tilewidth
 			self._tileHeight = tiledDetails.tileheight
 			for index, value in pairs(tiledDetails.layers) do
-				if(value.name ~= "Trees" and value.name ~= "Floor") then
-					self._drawLayer(value, tiledDetails.tilesets)
-				end
+				self._drawLayer(value, tiledDetails.tilesets)
 			end
 			self._cookAndClearRawMap()
 		end,
@@ -90,8 +88,8 @@ function(Positionable) return {
 			end
 			local xLimit = math.min(index + self._chunkSize, layer.width)
 			local yLimit = math.min(jndex + self._chunkSize, layer.height)
-			while(jndex <= yLimit) do
-				while(index <= xLimit) do
+			while(jndex < yLimit) do
+				while(index < xLimit) do
 					self._pasteFromTilesetAt(index, jndex, layer, tilesets, imageChunk)
 
 					index = index + 1
@@ -107,7 +105,7 @@ function(Positionable) return {
 				local tileset, tilesetX, tilesetY = self._getTilesetAndCoords(number, tilesets)
 				imageChunk:renderTo(function()
 					local cropper = love.graphics.newQuad(tilesetX, tilesetY,
-						tilesetX + tileset.tilewidth, tilesetY + tileset.tileheight,
+						tileset.tilewidth, tileset.tileheight,
 						self._tileset:getWidth(), self._tileset:getHeight())
 					love.graphics.drawq(self._tileset,
 						cropper,
