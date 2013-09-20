@@ -9,8 +9,12 @@ local _keyMap = {
 	["down"] = "down",
 	["s"] = "down",
 	["x"] = "down",
+	["right"] = "right",
+	["d"] = "right",
+	["left"] = "left",
+	["a"] = "left",
 
-	["return"] = "enter"
+	["return"] = "return"
 }
 
 function love.keypressed(key, unicode)

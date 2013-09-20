@@ -72,6 +72,23 @@ function(Positionable, List) return {
 		end,
 
 		--[[
+			Function: update
+
+			Parameters:
+				dt - The fraction of time passed since the update method was last called
+
+			Description:
+				Updates all of the elements in the container, whenever possible
+		--]]
+		update = function(dt)
+			self._positionables.forEach(function(value)
+				if(type(value.update) == "function") then
+					value.update(dt)
+				end
+			end)
+		end,
+
+		--[[
 			Function: destroy
 
 			Description:

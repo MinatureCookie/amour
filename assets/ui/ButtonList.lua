@@ -16,11 +16,10 @@
 --]]
 return class("ButtonList",
 {
-	amourPath("system/classes/Observer"),
 	amourPath("system/classes/sceneElements/ClickableContainer"),
 	amourPath("assets/ui/Button")
 },
-function(Observer, ClickableContainer, Button) return {
+function(ClickableContainer, Button) return {
 
 	inherits = ClickableContainer,
 
@@ -238,7 +237,7 @@ function(Observer, ClickableContainer, Button) return {
 				self._handleUpPress()
 			elseif(data.key == "down") then
 				self._handleDownPress()
-			elseif(data.key == "enter") then
+			elseif(data.key == "return") then
 				self._handleEnterPress()
 			end
 		end

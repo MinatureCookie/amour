@@ -102,5 +102,6 @@ end
 function love.update(dt)
 	_stage.pollMousePosition()
 
+	_stage.update(dt)
 	_sceneElements.updateScene(dt)
 end
