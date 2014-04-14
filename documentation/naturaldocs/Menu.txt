@@ -87,6 +87,9 @@ Group: System  {
    File: scene.lua  (system\base\scene.lua)
    }  # Group: System
 
+File: Character  (assets\game\player\Character.lua)
+File: TiledLuaMap  (assets\game\map\TiledLuaMap.lua)
+
 Group: Index  {
 
    Index: Everything
