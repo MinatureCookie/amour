@@ -1,14 +1,14 @@
 --[[
-	Class: Character
+	Class: TiledLuaMap
 
 	Package:
-		amour/assets/game/player
+		amour/assets/game/map
 
 	Extends:
 		<Positionable>
 
 	Description:
-		A character that can attach to a map, and is controlled by user input
+		A map that takes a "Tiled" map's .lua export,
 --]]
 return class("TiledLuaMap",
 {
@@ -28,15 +28,26 @@ function(Positionable) return {
 		_tileHeight = 0,
 		_chunkSize = 0,
 
+		--[[
+			Function: init
+
+			Parameters:
+				tiledLua - The directory location of the Tiled *.lua export
+				chunkSize - The chunk size of your Tiled map
+		--]]
 		init = function(tiledLua, chunkSize)
-			-- TODO This needs to be moved, and not static .png ...
-			self._tileset = love.graphics.newImage("images/scenery/tileset.png")
 			self._chunkSize = chunkSize
 
 			local tiledDetails = love.filesystem.load(tiledLua .. ".lua")()
-			self._loadImageFrom(tiledDetails)
+			self._loadImageFrom(tiledDetails, tiledLua)
 		end,
 
+		--[[
+			Function: init
+
+			Description:
+				Draws the map to the screen
+		--]]
 		draw = function()
 			for index, ival in pairs(self._mapImage) do
 				for jndex, value in pairs(ival) do
@@ -47,13 +58,59 @@ function(Positionable) return {
 			end
 		end,
 
-		_loadImageFrom = function(tiledDetails)
+		_loadImageFrom = function(tiledDetails, tiledLua)
 			self._tileWidth = tiledDetails.tilewidth
 			self._tileHeight = tiledDetails.tileheight
+
+			local image, parentCount = self._removeParentTraversal(tiledDetails.tilesets[1].image)
+			local imageDir = self._traverseParents(tiledLua, parentCount)
+			self._tileset = love.graphics.newImage(imageDir .. image)
+
 			for index, value in pairs(tiledDetails.layers) do
 				self._drawLayer(value, tiledDetails.tilesets)
 			end
 			self._cookAndClearRawMap()
+		end,
+
+		_removeParentTraversal = function(image)
+			local parentCount = 0
+			while string.sub(image, parentCount * 3, (parentCount + 1) * 3) == "../" do
+				parentCount = parentCount + 1
+			end
+
+			return string.sub(image, parentCount * 3 + 1), parentCount
+		end,
+
+		_traverseParents = function(file, parentCount)
+			local fileSplit = string.gmatch(file, "([^/]+)")
+			local fileSplitCount = 0
+			for f in fileSplit do
+				fileSplitCount = fileSplitCount + 1
+			end
+
+			local finalFileString = ""
+			local index = 1
+			for f in fileSplit do
+				if index > fileSplitCount - parentCount - 1 then
+					break
+				else
+					index = index + 1
+				end
+
+				finalFileString = finalFileString .. f .. "/"
+			end
+
+			return finalFileString
+		end,
+
+		_getDirectory = function(file)
+			local lastSlashIndex = string.find(file, "/[^/]*$")
+			local directory = file
+			if(lastSlashIndex ~= nil) then
+				directory = string.sub(file, 0, 1 - lastSlashIndex)
+			end
+
+			return directory
 		end,
 
 		_cookAndClearRawMap = function()

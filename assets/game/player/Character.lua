@@ -41,6 +41,13 @@ function(Positionable, Observer) return {
 		_vy = 0,
 		_vmagnitude = 100,
 
+		--[[
+			Function: init
+
+			Parameters:
+				imageDirectory - The directory containing "up", "right", "down", and "left" PNG files, of the character
+						facing different directions
+		--]]
 		init = function(imageDirectory)
 			self._directionImageMap[self.statics.UP] = love.graphics.newImage(imageDirectory .. "/up.png")
 			self._directionImageMap[self.statics.RIGHT] = love.graphics.newImage(imageDirectory .. "/right.png")
@@ -51,20 +58,31 @@ function(Positionable, Observer) return {
 			self._observer.addEventListener("keyreleased", self._handleKeyRelease)
 		end,
 
+		--[[
+			Function: update
+
+			Description:
+				Updates the character, e.g. handling its position on the screen
+
+			Parameters:
+				dt - The fraction of time passed
+		--]]
 		update = function(dt)
 			self._handleVelocity(self._vx, self._vy, self._vmagnitude, dt)
 
 			self._decideDirection()
 		end,
 
+		--[[
+			Function: draw
+
+			Description:
+				Draas the character to the screen
+		--]]
 		draw = function()
 			local x = math.floor(self._x)
 			local y = math.floor(self._y)
 			love.graphics.draw(self._directionImageMap[self._characterDirection], x, y)
-		end,
-
-		setHandleVelocity = function(f)
-			self._handleVelocity = f
 		end,
 
 		_handleVelocity = function(vx, vy, mag, dt)
